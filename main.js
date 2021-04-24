@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const Token = require('./config.env');
+const Token = require('./config.json');
 
 const client = new Discord.Client();
 
@@ -9,7 +9,6 @@ var check = true;
 
 client.once('ready', () => {
     console.log('Pocatch is online :D');
-    console.log(Token)
 })
 
 client.on('message', message => {
@@ -44,6 +43,7 @@ client.on('message', message => {
 
             }else {
                 message.channel.send(randomBroken);
+                console.log(randomBroken)
         }
 
         }else {
