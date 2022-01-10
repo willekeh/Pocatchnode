@@ -1,165 +1,133 @@
 const Discord = require('discord.js');
-const mysql = require('mysql');
+// const mysql = require('mysql');
 const Token = require('./config.json');
+const fs = require('fs')
+// var db = require('./database');
+// const dir = './commands'
+// const files = fs.readdirSync(dir)
 
-const pkdx = require('./pokedexentry/gen1dx.js')
-var db = require('./database')
+// const start = require('./commands/start')
+// const pick = require('./commands/pick')
+// const pokemon = require('./commands/pokemon')
+// const pokeball = require('./commands/pokeball')
+
+
 
 const client = new Discord.Client();
 
-const prefix ='$';
+const prefix = '$';
 
 var check = false;
 let random = 0;
-let pokemon = '';
 
 client.once('ready', () => {
-    console.log('Pocatch is online :D');
+  console.log('Pocatch is online :D');
 })
 
 client.on('message', message => {
-    if(!message.content.startsWith(prefix) || message.author.bot) return;
+  if (!message.content.startsWith(prefix) || message.author.bot) return;
 
-    const args = message.content.slice(prefix.length).split(/ +/);
-    const command = args.shift().toLowerCase();
+  const args = message.content.slice(prefix.length).split(/ +/);
+  const command = args.shift().toLowerCase();
 
-    if (command === 'test')
-    {
-        const test = db.gettest()
+  switch (command) {
+    case 'start':
+      const embed = {
+        "title": "Welcome to the world of pokemon ",
+        "description": "To be able to travel you will need a buddy, to help you on your quest. You can choose between :",
+        "url": "",
+        "color": 8530108,
+        "image": {
+          "url": "https://media.discordapp.net/attachments/827173164067848217/838855388748578836/20130731-100343.png"
+        },
+        "fields": [{
+            "name": "Charmander",
+            "value": "The lizard pokemon",
+            "inline": true
+          },
+          {
+            "name": "Squirtle",
+            "value": "The tiny turtle pokemon",
+            "inline": true
+          },
+          {
+            "name": "Bulbasaur",
+            "value": "The seed pokemon",
+            "inline": true
+          },
+          {
+            "name": "Choose",
+            "value": "To pick your buddy do $pick 'starter'"
+          }
+        ]
+      };
+      message.channel.send({
+        embed
+      });
+      break;
+    case 'ping':
+      message.channel.send(`Pong`);
+      break;
+    case 'time':
+      const currentDate = new Date();
+      message.channel.send("het is nu: " + currentDate);
 
-        // console.log(test);
+      //start command
+      // switch (command) {
+      //   case 'start':
+      //     start.start(message)
+      //     break;
+      //   case 'pick':
+      //     pick.pick(message, args)
+      //     break;
+      //   case 'pokemon':
+      //     pokemon.pokemon(message)
+      //     break;
+      //   case 'pokeball':
+      //     pokeball.pokeball(message)
+      //     break;
+      // case 'pokedex'
 
-        message.channel.send('it worked')
-    }
+      // case 'greatball'
+      // case 'ultraball'
+  }
 
-    if(command === 'start'){
+  // if (command === 'pokemon') {
 
-      db.getUser(message.author.username).then((discord_name) => {
-        console.log(discord_name)
-      })
+  // } else if (command === 'pokeball') {
 
-        async function returnPromises() {
-            var newPromise = new Promise((resolve) => {
-              setTimeout(() => {
-                console.log("Promise Executed...");
-                resolve(db.getUser(message.author.username));
-              }, 3000);
-            });
-          } 
-          
-        async function ExecuteFunction() {
-            const testdata = "hi"
-            var getPromise = await returnPromises();
-            console.log(testdata)
+  // if (check) {
+  //   check = false;
 
-            if (getPromise == 1)
-            {
-            console.log('data to database :DDDDD')
-            // db.addUser(message.author.username)
-            console.log('users added');
+  //   const broken = ["0", "You didnt even have a wiggle", "You almost had it but it broke free :(", "it fled"];
 
-            const embed = {
-            "title": "Welcome to the world of pokemon ",
-            "description": "To be able to travel you will need a buddy, to help you on your quest. You can choose between :",
-            "url": "",
-            "color": 8530108,
-            "image": {
-              "url": "https://media.discordapp.net/attachments/827173164067848217/838855388748578836/20130731-100343.png"
-            },
-            "fields": [
-              {
-                "name": "Charmander",
-                "value": "The lizard pokemon",
-                "inline": true
-              },
-              {
-                "name": "Squirtle",
-                "value": "The tiny turtle pokemon",
-                "inline": true
-              },
-              {
-                "name": "Bulbasaur",
-                "value": "The seed pokemon",
-                "inline": true
-              },
-              {
-                "name": "Choose",
-                "value": "To pick your buddy do $pick 'starter'"
-              }
-            ]
-          };
-          message.channel.send({ embed });
-    
-            } else {
-            message.channel.send('You have already started your journey do $buddy')
-            
-            }
+  //   const randomBroken = broken[Math.floor(Math.random() * broken.length)];
+  //   if (randomBroken === "0") {
 
-        }
-          
-        ExecuteFunction()
-        
-    } else if(command === 'pokemon'){
+  //     message.channel.send(`you caught a ${pokemon}`);
+  //     console.log(pokemon);
 
-        check = true;
 
-        message.channel.send('you see a pokemon in the distance, but what is it. use $pokeball to try and catch it ');
+  //   } else if (randomBroken === "it fled") {
+  //     message.channel.send(randomBroken);
+  //     console.log(randomBroken);
 
-        random = Math.ceil(Math.random() * (151));
+  //   } else {
+  //     message.channel.send(randomBroken);
+  //     console.log(randomBroken);
+  //   }
 
-        pokemon = db.getPokemon(random)
+  // } else {
+  //   message.channel.send("There is no pokemon to be found. try $pokemon");
+  // }
 
-        return check && random
+  //pick your starter command
+  // } else if (command === 'pick') {
 
-    } else if(command === 'pokeball'){
 
-        if(check){
-            check = false;
-        
-            const broken = ["0", "You didnt even have a wiggle", "You almost had it but it broke free :(", "it fled"];
-        
-            const randomBroken = broken[Math.floor(Math.random() * broken.length)];
-            if (randomBroken === "0"){
 
-                message.channel.send(`you caught a ${pokemon}`);
-                console.log(pokemon);
-                
-
-            } else if (randomBroken === "it fled") {
-                message.channel.send(randomBroken);
-                console.log(randomBroken);
-
-            } else {
-                message.channel.send(randomBroken);
-                console.log(randomBroken);
-            }
-
-        }else {
-            message.channel.send("There is no pokemon to be found. try $pokemon");
-        }
-
-    } else if(command === 'pokedex'){
-
-        if(check) {
-            // if(npkdx = True)
-
-            db.con.query("SELECT * FROM pokedex WHERE pokemon_id = 1", (err, results) => {
-                if(err) throw err;
-
-                let randomdex = Math.ceil(Math.random() * (results.length))
-
-                let entry = results[randomdex].entry
-
-                console.log(entry)
-
-                message.channel.send(entry); 
-                
-            });
-
-        } else {
-            message.channel.send('There is no pokemon. try $pokemon');
-        }
-    }
+  //pokedex command
+  // } else if (command === 'pokedex') {}
 });
 
 client.login(Token.token);
